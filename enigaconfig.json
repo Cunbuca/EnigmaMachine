@@ -1,15 +1,32 @@
 {
-  "reflector":{
-    "j":"u"
+  "reflectors": {
+    "reflectorA": {
+      "j": "u"
+    },
+    "reflectorB": {
+      "a": "i"
+    }
   },
-  "plugboard":{
-    "a":"v"
+  "plugboards": {
+    "plugboardA": {
+      "a": "v"  
+    },
+    "plugboardB": {
+      "g": "j"  
+    },
+    "plugboardC": {
+      "e": "n"  
+    }
   },
-  "rotors":[{
-      "v":"b"
-    },{
-      "b":"g"
-    },{
-      "g":"j"
-    }]
+  "rotors": {
+    "rotorA": {
+      "v": "b"
+    },
+    "rotorB": {
+      "b": "g"
+    },
+    "rotorC": {
+      "g": "j"
+    }
+  }
 }
