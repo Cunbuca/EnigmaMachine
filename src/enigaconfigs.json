@@ -1,0 +1,37 @@
+{
+  "plugBoards":{
+    "plugBoardC":{
+      "e":"n"
+    },
+    "plugBoardB":{
+      "g":"j"
+    },
+    "plugBoardA":{
+      "a":"v"
+    }
+  },
+  "reflectors":{
+    "reflectorA":{
+      "j":"u"
+    },
+    "reflectorB":{
+      "a":"i"
+    }
+  },
+  "rotors":{
+    "rotorB":{
+      "b":"g"
+    },
+    "rotorC":{
+      "g":"j"
+    },
+    "rotorA":{
+      "v":"b"
+    }
+  },
+  "using":{
+    "plugboard":"PlugBoardDeTeste",
+    "rotors":["a","1","--a"],
+    "reflector":"reflectorA"
+  }
+}
