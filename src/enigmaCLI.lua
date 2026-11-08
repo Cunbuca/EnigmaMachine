@@ -4,8 +4,13 @@ local tools = require("tools.tools")
 
 if args[1] == "decode" then
     if tools:array_key_exists(args, 2) then
+        args[2] = string.upper(args[2])
+        local rotorsPosition
         for i=1, #args[2], 1 do
             local char = string.sub(args[2], i, i)
+            char = enigmaEngine:plugBoard(char)
+            char, rotorsPosition = enigmaEngine:rotors(char)
+            print(rotorsPosition)
             char = enigmaEngine:plugBoard(char)
             io.write(char)
         end
@@ -23,13 +28,14 @@ elseif args[1] == "use" then
     if selected two rotors only will use two, non return error, can use any number of rotors as wanted. For default use the three firts rotors and the first plugboard and reflector.]]
     local module = args[2]
     module = string.lower(module)
-    local names
+    local names = {}
     if module == "rotors" then
         table.remove(args, 1)
         table.remove(args, 1)
         names = args
     else
-        names = args[3]
+        names[1] = args[3]
     end
-    enigmaEngine:use(module, names)
+    local resp = enigmaEngine:use(module, names)
+    io.write(resp)
 end
