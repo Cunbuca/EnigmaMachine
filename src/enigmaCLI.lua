@@ -4,16 +4,23 @@ local tools = require("tools.tools")
 
 if args[1] == "decode" then
     if tools:array_key_exists(args, 2) then
+        local phase = ""
         print("Rotors Initial Position: "..enigmaEngine:getRotorsPosition())
         args[2] = string.upper(args[2])
-        local rotorsPosition
         for i=1, #args[2], 1 do
             local char = string.sub(args[2], i, i)
             char = enigmaEngine:plugBoard(char)
             char = enigmaEngine:rotors(char)
             char = enigmaEngine:plugBoard(char)
             io.write(char)
+            if char == " " then
+                phase = phase .. " "
+            else
+                phase = phase .. char
+            end
         end
+        print("")
+        print(phase)
     else
         print("Usage: enigmaCLI decode \"messagen\" ")
     end
