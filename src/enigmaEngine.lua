@@ -158,8 +158,6 @@ else
     configs = defaultConfigs
 end
 
-configsFile:close()
-
 function enigmaEngine:plugBoard(entryChar)
     if tools:array_key_exists(configs.plugboards[configs.using.plugboard], entryChar) then
         return configs.plugboards[configs.using.plugboard][entryChar]
@@ -169,11 +167,20 @@ function enigmaEngine:plugBoard(entryChar)
 end
 
 function enigmaEngine:rotors(entryChar)
+    local previusRotorReachMax = false
+    local rotorLength = 26 + 1
     if entryChar == " " then
         return " "
     end
     for key, rotorName in ipairs(configs.using.rotors) do
-        configs.using.rotorsPosition[rotorName] = configs.using.rotorsPosition[rotorName] + 1
+        if key == 1 or previusRotorReachMax then 
+            configs.using.rotorsPosition[rotorName] = configs.using.rotorsPosition[rotorName] + 1
+            previusRotorReachMax = false
+        end
+        if configs.using.rotorsPosition[rotorName] >= rotorLength then
+            configs.using.rotorsPosition[rotorName] = 1    
+            previusRotorReachMax = true
+        end
 
         --[[if not array_key_exists(configs.rotors, rotorName) then
             return "Rotors name invalid"
@@ -185,8 +192,40 @@ function enigmaEngine:rotors(entryChar)
 
         entryChar = configs.rotors[rotorName][entryChar]
     end
-    print(table.concat(configs.using.rotorsPosition, " | "))
+
+    entryChar = reflector(entryChar)
+
+    for i=#configs.using.rotors, #configs.using.rotors, -1 do
+        --add a hashMap to do not need iterate too many times
+        for key, value in pairs(configs.rotors[configs.using.rotors[i]]) do
+            if value == entryChar then
+                entryChar = key
+                break
+            end
+        end
+    end 
+
+    configsFile = io.open("enigaconfigs.json", "w")
+    configsFile:write(json.encode(configs, {indent = true}))
+    configsFile:close()
     return entryChar
+end
+
+function reflector(entryChar)
+    if tools:array_key_exists(configs.reflectors[configs.using.reflector], entryChar) then 
+        return configs.reflectors[configs.using.reflector][entryChar]
+    else
+        --add a hashMap to do not need iterate too many times
+        for key, value in pairs(configs.reflectors[configs.using.reflector]) do
+            if value == entryChar then
+                return key
+            end
+        end
+    end
+end
+
+function enigmaEngine:getRotorsPosition()
+    return tools:concat(configs.using.rotorsPosition, configs.using.rotors, " | ")
 end
 
 function enigmaEngine:use(module, names)
