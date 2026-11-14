@@ -26,88 +26,66 @@ local defaultConfigs = {
     },
     rotors = {
         rotorA = {
-            "J",
-            "P",
-            "G",
-            "V",
-            "O",
-            "U",
-            "M",
-            "F",
-            "Y",
-            "Q",
-            "B",
-            "E",
-            "N",
-            "H",
-            "Z",
-            "R",
-            "D",
-            "K",
-            "A",
-            "S",
-            "X",
-            "L",
-            "I",
-            "C",
-            "T",
-            "W"
+            {"J", 6},
+            {"P", 8},
+            {"G", 16},
+            {"V", 23},
+            {"O", 7},
+            {"U", 2},
+            {"M", 9},
+            {"F", 24},
+            {"Y", 12},
+            {"Q", 18},
+            {"B", 26},
+            {"E", 4},
+            {"N", 14},
+            {"H", 15},
+            {"Z", 17},
+            {"R", 20},
+            {"D", 5},
+            {"K", 3},
+            {"A", 22},
+            {"S", 1},
+            {"X", 11},
+            {"L", 10},
+            {"I", 13},
+            {"C", 19},
+            {"T", 21},
+            {"W", 25}
         },
         rotorB = {
-            "N",
-            "Z",
-            "J",
-            "H",
-            "G",
-            "R",
-            "C",
-            "X",
-            "M",
-            "Y",
-            "S",
-            "W",
-            "B",
-            "O",
-            "U",
-            "F",
-            "A",
-            "I",
-            "V",
-            "L",
-            "P",
-            "E",
-            "K",
-            "Q",
-            "D",
-            "T"
+            {"N", 8},
+            {"Z", 6},
+            {"J", 5},
+            {"H", 20},
+            {"G", 18},
+            {"R", 21},
+            {"C", 4},
+            {"X", 17},
+            {"M", 26},
+            {"Y", 2},
+            {"S", 11},
+            {"W", 15},
+            {"B", 1},
+            {"O", 14},
+            {"U", 16},
+            {"F", 13},
+            {"A", 12},
+            {"I", 10},
+            {"V", 19},
+            {"L", 3},
+            {"P", 25},
+            {"E", 24},
+            {"K", 9},
+            {"Q", 23},
+            {"D", 7},
+            {"T", 22}
         },
         rotorC = {
-            "F",
-            "K",
-            "Q",
-            "H",
-            "T",
-            "L",
-            "X",
-            "O",
-            "C",
-            "B",
-            "J",
-            "S",
-            "P",
-            "D",
-            "Z",
-            "R",
-            "A",
-            "M",
-            "E",
-            "W",
-            "N",
-            "I",
-            "U",
-            "Y",
-            "G",
-            "V"
+            {"C", 2},
+            {"D", 3},
+            {"A", 4},
+            {"B", 1}
         }
     },
     reflectors = {
@@ -166,13 +144,13 @@ end
 
 function enigmaEngine:rotors(entryChar)
     local previusRotorReachMax = false
-    local rotorLength = 26 + 1
+    local previusRotorPosition = 0
+    local previusLetterPosition = 0
+    local rotorLength = 26
     if entryChar == " " then
         return " "
     end
     entryCharToNum = charToNum(entryChar)
-
-    print(entryChar.." vira: "..entryCharToNum)
     for key, rotorName in ipairs(configs.using.rotors) do
         if not tools:array_key_exists(configs.rotors, rotorName) then
             return "Rotors name invalid"
@@ -183,71 +161,36 @@ function enigmaEngine:rotors(entryChar)
         end
 
         if key == 1 or previusRotorReachMax then 
-            configs.using.rotorsPosition[rotorName] = configs.using.rotorsPosition[rotorName] +1
+            configs.using.rotorsPosition[rotorName] = configs.using.rotorsPosition[rotorName] + 1
             previusRotorReachMax = false
         end
 
-        if configs.using.rotorsPosition[rotorName] >= rotorLength then
+        if configs.using.rotorsPosition[rotorName] >= rotorLength + 1 then
             configs.using.rotorsPosition[rotorName] = 1    
             previusRotorReachMax = true
         end
 
-        if configs.using.rotorsPosition[rotorName] + entryCharToNum > 26 then
-            local og = entryCharToNum
-            entryCharToNum = (entryCharToNum + configs.using.rotorsPosition[rotorName])  - 26
-            entryChar = configs.rotors[rotorName][entryCharToNum]
-
-            print("porem: ".. configs.using.rotorsPosition[rotorName] .." + ".. og .." fica maior que: " .. 26 .. " entao vira: "..entryCharToNum)
+        if key == 1 then 
+            entryChar = configs.rotors[rotorName][configs.using.rotorsPosition[rotorName]][1]
         else
-            local sum = configs.using.rotorsPosition[rotorName] + entryCharToNum
-            entryChar = configs.rotors[rotorName][configs.using.rotorsPosition[rotorName] + entryCharToNum]
-            print(configs.using.rotorsPosition[rotorName] .." + ".. entryCharToNum .." = ".. sum)
+            local letterPosition = configs.rotors[rotorName][configs.using.rotorsPosition[rotorName]][2]
+            local nextLetterPosition = previusLetterPosition + configs.using.rotorsPosition[rotorName] + previusRotorPosition
+            --print(previusLetterPosition .. " + " .. configs.using.rotorsPosition[rotorName] .. " + " ..previusRotorPosition .." = " .. nextLetterPosition)
+            if nextLetterPosition > rotorLength then
+                nextLetterPosition = nextLetterPosition - rotorLength
+            end
+            entryChar = configs.rotors[rotorName][nextLetterPosition][1]
         end
-        print("que equivale a: " .. entryChar)
+        
+        --print("i now you: "..entryChar)
+        previusLetterPosition = configs.rotors[rotorName][configs.using.rotorsPosition[rotorName]][2]
+        previusRotorPosition = configs.using.rotorsPosition[rotorName]
+        --print("rotor: ".. rotorName .. " position: "..previusRotorPosition)
     end
 
-    
-
     entryChar = reflector(entryChar)
-    print("passa pela reflector e vira: ".. entryChar)
 
     --for i=#configs.using.rotors, #configs.using.rotors, -1 do
-    --    entryCharToNum = charToNum(entryChar)
-    --    local rotorName = configs.using.rotors[i]
-    --    --for r=0, #configs.rotors[rotorName], 1 do
-    --    --    if configs.rotors.[rotorName][r] == entryChar then
-    --    --        entryCharToNum = configs.rotors.[rotorName][r]
-    --    --    end
-    --    --end
-    --    --entryChar = 
-    --    
-    --    local rotorPosition = configs.using.rotorsPosition[rotorName]
-    --    local positionSum = rotorPosition + entryCharToNum
-    --    if  positionSum > 26 then
-    --        positionSum = positionSum - 26
-    --        print("porem: " .. rotorPosition .." + ".. entryCharToNum .." fica maior que: ".. 26 .. " entao vira: ".. positionSum)
-    --    en
-    --    print(rotorPosition.." + "..entryCharToNum.." = "..positionSum)
-    --    entryChar = configs.rotors[rotorName][positionSum]
-    --    
-    --    --entryChar = numToChar(positionSum)
-    --    --if configs.using.rotorsPosition[configs.using.rotors[i]] + entryCharToNum > 26 then
-    --    --    local sum = entryCharToNum
-    --    --    entryCharToNum = (entryCharToNum + configs.using.rotorsPosition[configs.using.rotors[i]]) - 26
-    --    --    entryChar = configs.rotors[configs.using.rotors[i]][entryCharToNum
-    --    --    print("porem: " .. configs.using.rotorsPosition[configs.using.rotors[i]] .." + ".. sum .." fica maior que: ".. 26 .. " --entao vira: "..entryCharToNum
-    --    --else
-    --    --    entryChar = configs.rotors[configs.using.rotors[i]][configs.using.rotorsPosition[configs.using.rotors[i]] + --entryCharToNum]
-    --    --    local sum = configs.using.rotorsPosition[configs.using.rotors[i]] + entryCharToNum
-    --    --    print(configs.using.rotorsPosition[configs.using.rotors[i]] .." + ".. entryCharToNum .. " = ".. sum)
-    --    --end
-    --    --print("1: ".. entryChar)
-    --    --print("A: ".. entryCharToNum)
-    --    --entryChar = numToChar(entryCharToNum)
-    --    --entryChar = configs.rotors[configs.using.rotors[i]][entryChar]
-    --    --print("2: ".. entryChar)
-    --    --entryChar = numToChar(entryCharToNum)
-    --    --print("que equivale a: " .. entryChar)
     --end 
 
     configsFile = io.open("enigaconfigs.json", "w")

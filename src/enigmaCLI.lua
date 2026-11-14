@@ -12,7 +12,6 @@ if args[1] == "decode" then
             char = enigmaEngine:plugBoard(char)
             char = enigmaEngine:rotors(char)
             char = enigmaEngine:plugBoard(char)
-            io.write(char)
             if char == " " then
                 phase = phase .. " "
             else
